@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MediQuick - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="overlay"></div>
+
+<div class="container">
+    <h1>Welcome to MediQuick</h1>
+    <p class="subtitle">Choose your healthcare service</p>
+
+    <div class="card-container">
+
+        <div class="card" onclick="loadDoctors('GP')">
+            <h2>GP</h2>
+            <p>General Practitioner consultations.</p>
+        </div>
+
+        <div class="card" onclick="loadDoctors('Sports')">
+            <h2>Sports Consultant</h2>
+            <p>Specialist care for sports injuries.</p>
+        </div>
+
+        <div class="card" onclick="loadDoctors('Sexual')">
+            <h2>Sexual Health</h2>
+            <p>Confidential sexual health services.</p>
+        </div>
+
+        <div class="card" onclick="loadDoctors('Psychiatrist')">
+            <h2>Psychiatrist</h2>
+            <p>Mental health and psychiatric care.</p>
+        </div>
+
+        <div class="card" onclick="loadDoctors('Nurse')">
+            <h2>General Nurse</h2>
+            <p>Routine care and nursing support.</p>
+        </div>
+
+    </div>
+
+    <div id="doctorList"></div>
+
+</div>
+
+<script>
+    function loadDoctors(category) {
+
+        fetch("http://localhost:8082/doctors/category/" + category)
+            .then(response => response.json())
+            .then(data => {
+
+                let output = "<h2>Available Consultants</h2>";
+                data.forEach(doc => {
+                    output += `
+                    <div class="doctor-card">
+                        <h3>${doc.name}</h3>
+                        <p>${doc.specialization}</p>
+                    </div>
+                `;
+                });
+
+                document.getElementById("doctorList").innerHTML = output;
+            })
+            .catch(error => console.error(error));
+    }
+</script>
+
+</body>
+</html>

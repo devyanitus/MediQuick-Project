@@ -1,0 +1,32 @@
+<script>
+    document.getElementById("loginForm").addEventListener("submit", function(e) {
+        e.preventDefault();
+
+        fetch("http://localhost:8081/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                email: document.getElementById("email").value,
+                password: document.getElementById("password").value
+            })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Invalid credentials");
+                }
+                return response.text();
+            })
+            .then(token => {
+
+                localStorage.setItem("jwt", token);
+
+                window.location.href = "http://localhost:8082/home.html";
+            })
+            .catch(error => {
+                alert("Login failed!");
+                console.error(error);
+            });
+    });
+</script>
