@@ -1,35 +1,14 @@
-//package com.mediquick.auth.controller;
-//
-//import com.mediquick.auth.entity.User;
-//import com.mediquick.auth.repository.UserRepository;
-//import org.springframework.web.bind.annotation.*;
-//
-//@RestController
-//@RequestMapping("/auth")
-//public class AuthController {
-//
-//    private final UserRepository userRepository;
-//
-//    public AuthController(UserRepository userRepository) {
-//        this.userRepository = userRepository;
-//    }
-//
-//    @PostMapping("/register")
-//    public String register(@RequestBody User user) {
-//
-//        userRepository.save(user);
-//        return "User registered successfully";
-//    }
-//}
-
 package com.mediquick.auth.controller;
 
 import com.mediquick.auth.dto.LoginRequest;
 import com.mediquick.auth.entity.User;
 import com.mediquick.auth.repository.UserRepository;
 import com.mediquick.auth.security.JwtService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -47,25 +26,43 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
+    // ✅ REGISTER
     @PostMapping("/register")
-    public String register(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody User user) {
+
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("error", "User already registered"));
+        }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
-        return "User registered successfully";
+        return ResponseEntity.ok(Map.of("message", "User registered successfully"));
     }
 
+    // ✅ LOGIN
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest request) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElse(null);
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid password");
+        if (user == null) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("error", "User not found"));
         }
 
-        return jwtService.generateToken(user.getEmail());
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(Map.of("error", "Invalid password"));
+        }
+
+        String token = jwtService.generateToken(user.getEmail());
+
+        return ResponseEntity.ok(Map.of("token", token));
     }
 }

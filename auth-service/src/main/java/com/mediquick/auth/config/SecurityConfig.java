@@ -17,14 +17,13 @@ public class SecurityConfig {
 
         http
                 .csrf(csrf -> csrf.disable())
-                .httpBasic(httpBasic -> httpBasic.disable())
-                .formLogin(form -> form.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 );
 
         return http.build();
+
+//        return http.build();
     }
     @Bean
    public PasswordEncoder passwordEncoder() {
