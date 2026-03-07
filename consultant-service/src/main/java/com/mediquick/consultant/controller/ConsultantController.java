@@ -22,7 +22,7 @@ public class ConsultantController {
     }
 
     @GetMapping("/category/{category}")
-    public List<Consultant> getConsultantsByCategory(@PathVariable String category) {
+    public List<Consultant> getConsultantsByCategory(@PathVariable("category") String category) {
         return consultantService.getConsultantsByCategory(category);
     }
 
