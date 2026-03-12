@@ -49,7 +49,7 @@ class ConsultantControllerTest {
 
         when(consultantService.getAllConsultants()).thenReturn(Arrays.asList(c1, c2));
 
-        mockMvc.perform(get("/consultants"))
+        mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("application/json"))
                 .andExpect(jsonPath("$[0].name").value("Alice"))
