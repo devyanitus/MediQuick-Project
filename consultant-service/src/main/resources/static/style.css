@@ -10,7 +10,7 @@ body::before {
     content: "";
     position: fixed;
     inset: 0;
-    background: url("images/tus1.jpg") center/cover no-repeat;
+    background: url("images/abdulai-sayni-u2EjDa_hYJI-unsplash.jpg") center/cover no-repeat;
     z-index: -2;
 }
 
