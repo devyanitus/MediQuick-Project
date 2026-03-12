@@ -70,7 +70,7 @@ class ConsultantControllerTest {
         when(consultantService.getConsultantsByCategory("Heart"))
                 .thenReturn(Collections.singletonList(consultant));
 
-        mockMvc.perform(get("/consultants/category/Heart"))
+        mockMvc.perform(get("/category/Heart"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith("application/json"))
                 .andExpect(jsonPath("$[0].name").value("Alice"))
@@ -89,7 +89,7 @@ class ConsultantControllerTest {
         when(consultantService.addConsultant(any(Consultant.class)))
                 .thenReturn(saved);
 
-        mockMvc.perform(post("/consultants")
+        mockMvc.perform(post("/")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(input)))
                 .andExpect(status().isOk())
