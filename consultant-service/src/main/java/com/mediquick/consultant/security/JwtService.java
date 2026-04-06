@@ -27,6 +27,7 @@ public class JwtService {
                     .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
+            System.out.println("❌ JWT failed: " + e.getClass().getSimpleName() + " - " + e.getMessage());
             return false;
         }
     }

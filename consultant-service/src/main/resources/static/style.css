@@ -1,71 +1,71 @@
-body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    position: relative;
-    min-height: 100vh;
-}
+/*body {*/
+/*    margin: 0;*/
+/*    font-family: 'Segoe UI', sans-serif;*/
+/*    position: relative;*/
+/*    min-height: 100vh;*/
+/*}*/
 
-/* Background */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    background: url("images/abdulai-sayni-u2EjDa_hYJI-unsplash.jpg") center/cover no-repeat;
-    z-index: -2;
-}
+/*!* Background *!*/
+/*body::before {*/
+/*    content: "";*/
+/*    position: fixed;*/
+/*    inset: 0;*/
+/*    background: url("images/abdulai-sayni-u2EjDa_hYJI-unsplash.jpg") center/cover no-repeat;*/
+/*    z-index: -2;*/
+/*}*/
 
-/* Dark overlay */
-.overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.55);
-    z-index: -1;
-}
+/*!* Dark overlay *!*/
+/*.overlay {*/
+/*    position: fixed;*/
+/*    inset: 0;*/
+/*    background: rgba(0,0,0,0.55);*/
+/*    z-index: -1;*/
+/*}*/
 
-.container {
-    text-align: center;
-    padding: 50px 20px;
-    color: white;
-}
+/*.container {*/
+/*    text-align: center;*/
+/*    padding: 50px 20px;*/
+/*    color: white;*/
+/*}*/
 
-h1 {
-    font-size: 40px;
-    margin-bottom: 10px;
-}
+/*h1 {*/
+/*    font-size: 40px;*/
+/*    margin-bottom: 10px;*/
+/*}*/
 
-.subtitle {
-    margin-bottom: 40px;
-}
+/*.subtitle {*/
+/*    margin-bottom: 40px;*/
+/*}*/
 
-/* Cards grid */
-.card-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 25px;
-    max-width: 1200px;
-    margin: auto;
-}
+/*!* Cards grid *!*/
+/*.card-container {*/
+/*    display: grid;*/
+/*    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));*/
+/*    gap: 25px;*/
+/*    max-width: 1200px;*/
+/*    margin: auto;*/
+/*}*/
 
-/* Category Cards */
-.card {
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(10px);
-    padding: 30px;
-    border-radius: 15px;
-    cursor: pointer;
-    transition: 0.3s;
-}
+/*!* Category Cards *!*/
+/*.card {*/
+/*    background: rgba(255,255,255,0.15);*/
+/*    backdrop-filter: blur(10px);*/
+/*    padding: 30px;*/
+/*    border-radius: 15px;*/
+/*    cursor: pointer;*/
+/*    transition: 0.3s;*/
+/*}*/
 
-.card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
-}
+/*.card:hover {*/
+/*    transform: translateY(-10px);*/
+/*    box-shadow: 0 15px 30px rgba(0,0,0,0.4);*/
+/*}*/
 
-/* Doctor result cards */
-.doctor-card {
-    background: rgba(255,255,255,0.2);
-    margin: 15px auto;
-    padding: 20px;
-    width: 300px;
-    border-radius: 10px;
-}
+/*!* Doctor result cards *!*/
+/*.doctor-card {*/
+/*    background: rgba(255,255,255,0.2);*/
+/*    margin: 15px auto;*/
+/*    padding: 20px;*/
+/*    width: 300px;*/
+/*    border-radius: 10px;*/
+/*}*/

@@ -1,6 +1,7 @@
 package com.mediquick.auth.controller;
 
 import com.mediquick.auth.dto.LoginRequest;
+import com.mediquick.auth.dto.RegisterRequest;
 import com.mediquick.auth.entity.User;
 import com.mediquick.auth.repository.UserRepository;
 import com.mediquick.auth.security.JwtService;
@@ -28,15 +29,19 @@ public class AuthController {
 
     // ✅ REGISTER
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
 
-        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+        if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity
                     .badRequest()
                     .body(Map.of("error", "User already registered"));
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
         userRepository.save(user);
 
         return ResponseEntity.ok(Map.of("message", "User registered successfully"));
@@ -63,6 +68,11 @@ public class AuthController {
 
         String token = jwtService.generateToken(user.getEmail());
 
-        return ResponseEntity.ok(Map.of("token", token));
-    }
+        return ResponseEntity.ok(
+                Map.of(
+                        "token", token,
+                        "email", user.getEmail(),
+                        "name", user.getName()
+                )
+        );    }
 }
