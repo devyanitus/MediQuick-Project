@@ -19,7 +19,7 @@ class UserRepositoryTest {
     @Test
     @DisplayName("Should find user by email")
     void findByEmail_shouldReturnUser_whenEmailExists() {
-        User user = new User("john@example.com", "password123");
+        User user = new User("john@example.com", "password123", "John Doe");
         userRepository.save(user);
 
         Optional<User> result = userRepository.findByEmail("john@example.com");
