@@ -45,7 +45,7 @@ class AuthControllerTest {
     @MockBean
     private JwtService jwtService;
 
-    // ✅ important for security bypass
+    //  important for security bypass
     @MockBean
     private JwtAuthFilter jwtAuthFilter;
 

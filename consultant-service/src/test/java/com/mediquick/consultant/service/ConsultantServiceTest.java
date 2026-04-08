@@ -2,6 +2,7 @@ package com.mediquick.consultant.service;
 
 import com.mediquick.consultant.entity.Consultant;
 import com.mediquick.consultant.repository.ConsultantRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -9,10 +10,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,47 +24,92 @@ class ConsultantServiceTest {
     @InjectMocks
     private ConsultantService consultantService;
 
-    @Test
-    void shouldReturnAllConsultants() {
-        List<Consultant> consultants = Arrays.asList(
-                new Consultant("Alice", "Cardiology", "Heart"),
-                new Consultant("Bob", "Neurology", "Brain")
-        );
+    private Consultant doctor1;
+    private Consultant doctor2;
 
-        when(consultantRepository.findAll()).thenReturn(consultants);
+    @BeforeEach
+    void setUp() {
+        doctor1 = new Consultant("Dr John Smith", "General Medicine", "GP", "john@gmail.com");
+        doctor1.setId(1L);
+
+        doctor2 = new Consultant("Dr Alice", "Family Medicine", "GP", "alice@gmail.com");
+        doctor2.setId(2L);
+    }
+
+    // ===== getAllConsultants =====
+
+    @Test
+    void getAllConsultants_ReturnsAllDoctors() {
+        when(consultantRepository.findAll()).thenReturn(Arrays.asList(doctor1, doctor2));
 
         List<Consultant> result = consultantService.getAllConsultants();
 
         assertEquals(2, result.size());
-        assertEquals("Alice", result.get(0).getName());
-        verify(consultantRepository).findAll();
+        verify(consultantRepository, times(1)).findAll();
     }
 
     @Test
-    void shouldReturnConsultantsByCategory() {
-        List<Consultant> consultants = Collections.singletonList(
-                new Consultant("Alice", "Cardiology", "Heart")
-        );
+    void getAllConsultants_EmptyList_ReturnsEmpty() {
+        when(consultantRepository.findAll()).thenReturn(List.of());
 
-        when(consultantRepository.findByCategory("Heart")).thenReturn(consultants);
+        List<Consultant> result = consultantService.getAllConsultants();
 
-        List<Consultant> result = consultantService.getConsultantsByCategory("Heart");
+        assertTrue(result.isEmpty());
+    }
 
-        assertEquals(1, result.size());
-        assertEquals("Heart", result.get(0).getCategory());
-        verify(consultantRepository).findByCategory("Heart");
+    // ===== getConsultantsByCategory =====
+
+    @Test
+    void getConsultantsByCategory_ReturnsMatchingDoctors() {
+        when(consultantRepository.findByCategory("GP"))
+                .thenReturn(Arrays.asList(doctor1, doctor2));
+
+        List<Consultant> result = consultantService.getConsultantsByCategory("GP");
+
+        assertEquals(2, result.size());
+        assertEquals("GP", result.get(0).getCategory());
+        assertEquals("GP", result.get(1).getCategory());
     }
 
     @Test
-    void shouldAddConsultant() {
-        Consultant consultant = new Consultant("Alice", "Cardiology", "Heart");
+    void getConsultantsByCategory_NoMatch_ReturnsEmpty() {
+        when(consultantRepository.findByCategory("Unknown"))
+                .thenReturn(List.of());
 
-        when(consultantRepository.save(consultant)).thenReturn(consultant);
+        List<Consultant> result = consultantService.getConsultantsByCategory("Unknown");
 
-        Consultant result = consultantService.addConsultant(consultant);
+        assertTrue(result.isEmpty());
+    }
 
-        assertEquals("Alice", result.getName());
-        assertEquals("Cardiology", result.getSpecialization());
-        verify(consultantRepository).save(consultant);
+    @Test
+    void getConsultantsByCategory_CorrectCategoryPassed() {
+        when(consultantRepository.findByCategory("Nurse")).thenReturn(List.of());
+
+        consultantService.getConsultantsByCategory("Nurse");
+
+        verify(consultantRepository, times(1)).findByCategory("Nurse");
+    }
+
+    // ===== addConsultant =====
+
+    @Test
+    void addConsultant_SavesAndReturnsConsultant() {
+        when(consultantRepository.save(doctor1)).thenReturn(doctor1);
+
+        Consultant result = consultantService.addConsultant(doctor1);
+
+        assertNotNull(result);
+        assertEquals("Dr John Smith", result.getName());
+        assertEquals("GP", result.getCategory());
+        verify(consultantRepository, times(1)).save(doctor1);
+    }
+
+    @Test
+    void addConsultant_ReturnsCorrectEmail() {
+        when(consultantRepository.save(doctor1)).thenReturn(doctor1);
+
+        Consultant result = consultantService.addConsultant(doctor1);
+
+        assertEquals("john@gmail.com", result.getEmail());
     }
 }

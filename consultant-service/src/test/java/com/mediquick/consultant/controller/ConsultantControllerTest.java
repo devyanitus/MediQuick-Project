@@ -1,103 +1,190 @@
 package com.mediquick.consultant.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mediquick.consultant.entity.Consultant;
-import com.mediquick.consultant.service.ConsultantService;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
+import com.mediquick.consultant.entity.*;
+import com.mediquick.consultant.security.JwtService;
+import com.mediquick.consultant.service.*;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.*;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.Arrays;
-import java.util.Collections;
+import java.time.LocalDate;
+import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(MockitoExtension.class)
+@WebMvcTest(ConsultantController.class)
+@AutoConfigureMockMvc(addFilters = false)
 class ConsultantControllerTest {
 
+    @Autowired
     private MockMvc mockMvc;
-    private ObjectMapper objectMapper;
 
-    @Mock
+    @MockBean
+    private JwtService jwtService;
+
+    @MockBean
     private ConsultantService consultantService;
 
-    @InjectMocks
-    private ConsultantController consultantController;
+//    @MockBean
+//    private JwtService jwtService;
 
-    @BeforeEach
-    void setUp() {
-        objectMapper = new ObjectMapper();
-        mockMvc = MockMvcBuilders.standaloneSetup(consultantController).build();
-    }
+    @MockBean
+    private AvailabilityService availabilityService;
 
+    @MockBean
+    private BookingService bookingService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    // ✅ GET ALL CONSULTANTS
     @Test
-    @DisplayName("Should return all consultants")
-    void shouldReturnAllConsultants() throws Exception {
-        Consultant c1 = new Consultant("Alice", "Cardiology", "Heart");
-        Consultant c2 = new Consultant("Bob", "Neurology", "Brain");
+    void getAllConsultants() throws Exception {
 
-        when(consultantService.getAllConsultants()).thenReturn(Arrays.asList(c1, c2));
+        Consultant c = new Consultant();
+        c.setId(1L);
+        c.setName("Dr John");
+        c.setSpecialization("Cardiology");
+        c.setCategory("Heart");
+        c.setEmail("john@gmail.com");
 
-        mockMvc.perform(get("/"))
+        when(consultantService.getAllConsultants())
+                .thenReturn(List.of(c));
+
+        mockMvc.perform(get("/consultants"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith("application/json"))
-                .andExpect(jsonPath("$[0].name").value("Alice"))
-                .andExpect(jsonPath("$[0].specialization").value("Cardiology"))
-                .andExpect(jsonPath("$[0].category").value("Heart"))
-                .andExpect(jsonPath("$[1].name").value("Bob"))
-                .andExpect(jsonPath("$[1].specialization").value("Neurology"))
-                .andExpect(jsonPath("$[1].category").value("Brain"));
-
-        verify(consultantService).getAllConsultants();
+                .andExpect(jsonPath("$[0].name").value("Dr John"))
+                .andExpect(jsonPath("$[0].category").value("Heart"));
     }
 
+    // ✅ GET BY CATEGORY
     @Test
-    @DisplayName("Should return consultants by category")
-    void shouldReturnConsultantsByCategory() throws Exception {
-        Consultant consultant = new Consultant("Alice", "Cardiology", "Heart");
+    void getByCategory() throws Exception {
+
+        Consultant c = new Consultant();
+        c.setId(1L);
+        c.setName("Dr John");
+        c.setSpecialization("Cardiology");
+        c.setCategory("Heart");
+        c.setEmail("john@gmail.com");
 
         when(consultantService.getConsultantsByCategory("Heart"))
-                .thenReturn(Collections.singletonList(consultant));
+                .thenReturn(List.of(c));
 
-        mockMvc.perform(get("/category/Heart"))
+        mockMvc.perform(get("/consultants/doctors/category/Heart"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith("application/json"))
-                .andExpect(jsonPath("$[0].name").value("Alice"))
-                .andExpect(jsonPath("$[0].specialization").value("Cardiology"))
                 .andExpect(jsonPath("$[0].category").value("Heart"));
-
-        verify(consultantService).getConsultantsByCategory("Heart");
     }
 
+    // ✅ ADD CONSULTANT
     @Test
-    @DisplayName("Should add consultant")
-    void shouldAddConsultant() throws Exception {
-        Consultant input = new Consultant("Alice", "Cardiology", "Heart");
-        Consultant saved = new Consultant("Alice", "Cardiology", "Heart");
+    void addConsultant() throws Exception {
 
-        when(consultantService.addConsultant(any(Consultant.class)))
-                .thenReturn(saved);
+        Consultant c = new Consultant();
+        c.setName("Dr John");
+        c.setSpecialization("Cardiology");
+        c.setCategory("Heart");
+        c.setEmail("john@gmail.com");
 
-        mockMvc.perform(post("/")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(input)))
+        when(consultantService.addConsultant(any()))
+                .thenReturn(c);
+
+        mockMvc.perform(post("/consultants")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(c)))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith("application/json"))
-                .andExpect(jsonPath("$.name").value("Alice"))
-                .andExpect(jsonPath("$.specialization").value("Cardiology"))
+                .andExpect(jsonPath("$.name").value("Dr John"))
                 .andExpect(jsonPath("$.category").value("Heart"));
+    }
 
-        verify(consultantService).addConsultant(any(Consultant.class));
+    // ✅ GET AVAILABILITY
+    @Test
+    void getAvailability() throws Exception {
+
+        Availability a = new Availability();
+        a.setTimeSlot("10:00 AM");
+        a.setAvailableDate(LocalDate.now());
+        a.setBooked(false);
+
+        when(availabilityService.getAvailabilityByDoctor(1L))
+                .thenReturn(List.of(a));
+
+        mockMvc.perform(get("/consultants/doctors/1/availability"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].timeSlot").value("10:00 AM"));
+    }
+
+    // ✅ BOOK SLOT
+    @Test
+    void bookSlot() throws Exception {
+
+        Availability a = new Availability();
+        a.setBooked(true);
+
+        when(availabilityService.bookSlot(1L))
+                .thenReturn(a);
+
+        mockMvc.perform(put("/consultants/availability/1/book"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.booked").value(true));
+    }
+
+    // ✅ CREATE BOOKING
+    @Test
+    void createBooking() throws Exception {
+
+        Booking b = new Booking();
+        b.setUserEmail("user@gmail.com");
+        b.setDoctorId(1L);
+        b.setBookingDate(LocalDate.now());
+        b.setTimeSlot("10:00 AM");
+
+        when(bookingService.createBooking(any()))
+                .thenReturn(b);
+
+        mockMvc.perform(post("/consultants/bookings")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(b)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.userEmail").value("user@gmail.com"));
+    }
+
+    // ✅ GET BOOKINGS
+    @Test
+    void getBookings() throws Exception {
+
+        Booking b = new Booking();
+        b.setUserEmail("user@gmail.com");
+        b.setDoctorId(1L);
+        b.setBookingDate(LocalDate.now());
+        b.setTimeSlot("10:00 AM");
+
+        when(bookingService.getBookingsByEmail("user@gmail.com"))
+                .thenReturn(List.of(b));
+
+        mockMvc.perform(get("/consultants/bookings?email=user@gmail.com"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].userEmail").value("user@gmail.com"));
+    }
+
+    // ✅ CANCEL BOOKING
+    @Test
+    void cancelBooking() throws Exception {
+
+        Booking b = new Booking();
+        b.setStatus("CANCELLED");
+
+        when(bookingService.cancelBooking(1L))
+                .thenReturn(b);
+
+        mockMvc.perform(put("/consultants/bookings/1/cancel"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("CANCELLED"));
     }
 }

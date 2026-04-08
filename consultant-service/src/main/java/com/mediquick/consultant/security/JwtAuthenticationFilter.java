@@ -36,14 +36,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         // ❌ No token
         if (header == null || !header.startsWith("Bearer ")) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            filterChain.doFilter(request, response);
             return;
         }
 
         String token = header.substring(7);
 
         if (!jwtService.validateToken(token)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            filterChain.doFilter(request, response);
             return;
         }
 

@@ -1,7 +1,6 @@
 package com.mediquick.consultant.security;
 
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,46 +13,48 @@ import static org.junit.jupiter.api.Assertions.*;
 class JwtServiceTest {
 
     private JwtService jwtService;
-    private String secret;
+    private String secret = "mediquickSecretKeyForJwtGeneration123456";
+    private String validToken;
 
     @BeforeEach
     void setUp() {
         jwtService = new JwtService();
-        secret = "mytestsecretkeymytestsecretkey12";
+
+        // Inject secret into service
         ReflectionTestUtils.setField(jwtService, "secret", secret);
-    }
 
-    @Test
-    void shouldValidateTokenWhenTokenIsCorrect() {
-        String token = generateToken("user@example.com");
-
-        boolean result = jwtService.validateToken(token);
-
-        assertTrue(result);
-    }
-
-    @Test
-    void shouldReturnFalseWhenTokenIsInvalid() {
-        boolean result = jwtService.validateToken("invalid.token.value");
-
-        assertFalse(result);
-    }
-
-    @Test
-    void shouldExtractEmailFromToken() {
-        String token = generateToken("user@example.com");
-
-        String email = jwtService.extractEmail(token);
-
-        assertEquals("user@example.com", email);
-    }
-
-    private String generateToken(String email) {
+        // ✅ Generate token dynamically (NO dependency on auth-service)
         Key key = Keys.hmacShaKeyFor(secret.getBytes());
 
-        return Jwts.builder()
-                .setSubject(email)
-                .signWith(key, SignatureAlgorithm.HS256)
+        validToken = Jwts.builder()
+                .setSubject("test@gmail.com")
+                .signWith(key)
                 .compact();
+    }
+
+    @Test
+    void validateToken_ShouldReturnTrue_WhenTokenIsValid() {
+        assertTrue(jwtService.validateToken(validToken));
+    }
+
+    @Test
+    void validateToken_ShouldReturnFalse_WhenTokenIsInvalid() {
+        String invalidToken = "invalid.token.value";
+        assertFalse(jwtService.validateToken(invalidToken));
+    }
+
+    @Test
+    void extractEmail_ShouldReturnEmail_WhenTokenIsValid() {
+        String email = jwtService.extractEmail(validToken);
+        assertEquals("test@gmail.com", email);
+    }
+
+    @Test
+    void extractEmail_ShouldThrowException_WhenTokenIsInvalid() {
+        String invalidToken = "invalid.token.value";
+
+        assertThrows(Exception.class, () -> {
+            jwtService.extractEmail(invalidToken);
+        });
     }
 }
