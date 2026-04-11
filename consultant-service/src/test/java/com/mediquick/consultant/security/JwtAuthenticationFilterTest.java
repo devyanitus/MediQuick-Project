@@ -1,6 +1,5 @@
 package com.mediquick.consultant.security;
 
-import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
+
+import jakarta.servlet.FilterChain;
 
 import java.io.IOException;
 
@@ -72,6 +73,7 @@ class JwtAuthenticationFilterTest {
 
         assertNull(SecurityContextHolder.getContext().getAuthentication());
         verify(jwtService).validateToken("invalid-token");
+        verify(jwtService, never()).extractEmail(anyString());
         verify(filterChain).doFilter(request, response);
     }
 
@@ -88,8 +90,10 @@ class JwtAuthenticationFilterTest {
         jwtAuthenticationFilter.doFilter(request, response, filterChain);
 
         assertNotNull(SecurityContextHolder.getContext().getAuthentication());
-        assertEquals("user@example.com",
-                SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+        assertEquals(
+                "user@example.com",
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal()
+        );
 
         verify(jwtService).validateToken("valid-token");
         verify(jwtService).extractEmail("valid-token");

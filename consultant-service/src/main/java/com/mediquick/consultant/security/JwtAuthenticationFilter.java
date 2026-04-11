@@ -30,30 +30,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String header = request.getHeader("Authorization");
+        System.out.println(">>> Method: " + request.getMethod());
+        System.out.println(">>> URI: " + request.getRequestURI());
+        System.out.println(">>> Auth Header: " + header);
 
-        if (header != null && header.startsWith("Bearer ")) {
-
-            String token = header.substring(7);
-
-            if (jwtService.validateToken(token)) {
-
-                String email = jwtService.extractEmail(token);
-
-                UsernamePasswordAuthenticationToken authentication =
-                        new UsernamePasswordAuthenticationToken(
-                                email,
-                                null,
-                                Collections.emptyList()
-                        );
-
-                authentication.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+        // ❌ No token
+        if (header == null || !header.startsWith("Bearer ")) {
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            filterChain.doFilter(request, response);
+            return;
         }
 
+        String token = header.substring(7);
+
+        if (!jwtService.validateToken(token)) {
+//            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        // ✅ Valid token → set authentication
+        String email = jwtService.extractEmail(token);
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                        email,
+                        null,
+                        Collections.emptyList()
+                );
+
+        authentication.setDetails(
+                new WebAuthenticationDetailsSource().buildDetails(request)
+        );
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         filterChain.doFilter(request, response);
+//        String header = request.getHeader("Authorization");
+//        System.out.println(">>> Method: " + request.getMethod());
+//        System.out.println(">>> URI: " + request.getRequestURI());
+//        System.out.println(">>> Auth Header: " + header);
     }
+
 }
