@@ -6,6 +6,13 @@ pipeline {
         jdk 'JDK21'
     }
 
+    environment {
+        DOCKER_USERNAME = 'sid118'
+        DOCKER_PASSWORD = credentials('dockerhub-credentials')
+        IMAGE_TAG = "latest"
+    }
+
+
     stages {
 
         stage('Checkout Code From Git') {
@@ -56,8 +63,40 @@ pipeline {
                 }
             }
         }
-//docker stage
+        stage('Build Docker Images') {
+            steps {
+                bat '''
+                docker build -t %DOCKER_USERNAME%/auth-service:%IMAGE_TAG% auth-service
+                docker build -t %DOCKER_USERNAME%/consultant-service:%IMAGE_TAG% consultant-service
+                docker build -t %DOCKER_USERNAME%/api-gateway:%IMAGE_TAG% Api-Gateway
+                docker build -t %DOCKER_USERNAME%/config-server:%IMAGE_TAG% config-server
+                docker build -t %DOCKER_USERNAME%/eureka-server:%IMAGE_TAG% eureka-server
+                '''
+            }
+        }
 
+        stage('Docker Login') {
+            steps {
+                bat '''
+                echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
+                '''
+            }
+        }
+
+        stage('Push Docker Images') {
+            options {
+                timeout(time: 10, unit: 'MINUTES')
+            }
+            steps {
+                bat '''
+                docker push %DOCKER_USERNAME%/auth-service:%IMAGE_TAG%
+                docker push %DOCKER_USERNAME%/consultant-service:%IMAGE_TAG%
+                docker push %DOCKER_USERNAME%/api-gateway:%IMAGE_TAG%
+                docker push %DOCKER_USERNAME%/config-server:%IMAGE_TAG%
+                docker push %DOCKER_USERNAME%/eureka-server:%IMAGE_TAG%
+                '''
+            }
+        }
 
 //        stage('Karate API Tests') {
 //            steps {
