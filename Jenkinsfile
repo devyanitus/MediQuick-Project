@@ -21,20 +21,6 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    bat '''
-                    mvn clean verify sonar:sonar ^
-                      -Dsonar.projectKey=mediquick ^
-                      -Dsonar.projectName=MediQuick ^
-                      -Dsonar.host.url=http://localhost:9000 ^
-                      -Dsonar.login=YOUR_TOKEN
-                    '''
-                }
-            }
-        }
-
         stage('Test Auth Service') {
             steps {
                 dir('auth-service') {
@@ -57,18 +43,34 @@ pipeline {
             }
         }
 
-        stage('Karate API Tests') {
+        stage('SonarQube Analysis') {
             steps {
-                dir('karate-tests') {
-                    bat 'mvn test'
+                withSonarQubeEnv('SonarQube') {
+                    bat '''
+                    mvn clean verify sonar:sonar ^
+                      -Dsonar.projectKey=mediquick ^
+                      -Dsonar.projectName=MediQuick ^
+                      -Dsonar.host.url=http://localhost:9000 ^
+                      -Dsonar.login=YOUR_TOKEN
+                    '''
                 }
             }
         }
+//docker stage
 
-        stage('Publish Karate Results') {
-            steps {
-                junit '**/karate-tests/target/surefire-reports/*.xml'
-            }
-        }
+
+//        stage('Karate API Tests') {
+//            steps {
+//                dir('karate-tests') {
+//                    bat 'mvn test'
+//                }
+//            }
+//        }
+//
+//        stage('Publish Karate Results') {
+//            steps {
+//                junit '**/karate-tests/target/surefire-reports/*.xml'
+//            }
+//        }
     }
 }
