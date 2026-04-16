@@ -24,7 +24,7 @@ pipeline {
 
         stage('Code Compilation') {
             steps {
-                bat 'mvn clean package spring-boot:repackage'
+                bat 'mvn clean install -DskipTests'
             }
         }
 //
