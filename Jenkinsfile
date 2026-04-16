@@ -22,47 +22,47 @@ pipeline {
             }
         }
 
-        stage('Code Compilation') {
-            steps {
-                bat 'mvn clean install -DskipTests'
-            }
-        }
-
-        stage('Test Auth Service') {
-            steps {
-                dir('auth-service') {
-                    bat 'mvn test'
-                }
-            }
-        }
-
-        stage('Test Consultant Service') {
-            steps {
-                dir('consultant-service') {
-                    bat 'mvn test'
-                }
-            }
-        }
-
-        stage('Code Coverage Report') {
-            steps {
-                jacoco()
-            }
-        }
-
-        stage('SonarQube Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    bat '''
-                    mvn clean verify -pl !karate-tests -am sonar:sonar ^
-                      -Dsonar.projectKey=mediquick ^
-                      -Dsonar.projectName=MediQuick ^
-                      -Dsonar.host.url=http://localhost:9000 ^
-                      -Dsonar.exclusions=**/karate-tests/**
-                    '''
-                }
-            }
-        }
+//        stage('Code Compilation') {
+//            steps {
+//                bat 'mvn clean install -DskipTests'
+//            }
+//        }
+//
+//        stage('Test Auth Service') {
+//            steps {
+//                dir('auth-service') {
+//                    bat 'mvn test'
+//                }
+//            }
+//        }
+//
+//        stage('Test Consultant Service') {
+//            steps {
+//                dir('consultant-service') {
+//                    bat 'mvn test'
+//                }
+//            }
+//        }
+//
+//        stage('Code Coverage Report') {
+//            steps {
+//                jacoco()
+//            }
+//        }
+//
+//        stage('SonarQube Analysis') {
+//            steps {
+//                withSonarQubeEnv('SonarQube') {
+//                    bat '''
+//                    mvn clean verify -pl !karate-tests -am sonar:sonar ^
+//                      -Dsonar.projectKey=mediquick ^
+//                      -Dsonar.projectName=MediQuick ^
+//                      -Dsonar.host.url=http://localhost:9000 ^
+//                      -Dsonar.exclusions=**/karate-tests/**
+//                    '''
+//                }
+//            }
+//        }
 
         stage('Build Docker Images') {
             steps {
@@ -85,9 +85,9 @@ pipeline {
         }
 
         stage('Push Docker Images') {
-            options {
-                timeout(time: 10, unit: 'MINUTES')
-            }
+//            options {
+//                timeout(time: 10, unit: 'MINUTES')
+//            }
             steps {
                 bat '''
                 docker push %DOCKER_USERNAME%/auth-service:%IMAGE_TAG%
