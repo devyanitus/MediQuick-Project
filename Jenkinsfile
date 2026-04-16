@@ -22,11 +22,11 @@ pipeline {
             }
         }
 
-//        stage('Code Compilation') {
-//            steps {
-//                bat 'mvn clean install -DskipTests'
-//            }
-//        }
+        stage('Code Compilation') {
+            steps {
+                bat 'mvn clean package spring-boot:repackage'
+            }
+        }
 //
 //        stage('Test Auth Service') {
 //            steps {
