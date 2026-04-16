@@ -51,7 +51,6 @@ pipeline {
                       -Dsonar.projectKey=mediquick ^
                       -Dsonar.projectName=MediQuick ^
                       -Dsonar.host.url=http://localhost:9000 ^
-                      -Dsonar.login=YOUR_TOKEN ^
                       -Dsonar.exclusions=**/karate-tests/**
                     '''
                 }
