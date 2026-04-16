@@ -2,33 +2,25 @@ version: '3.9'
 
 services:
 
+  # CONFIG SERVER
   config-server:
     image: sid118/config-server:latest
     container_name: config-server
     ports:
       - "8888:8888"
     restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
+  # EUREKA
   eureka-server:
     image: sid118/eureka-server:latest
     container_name: eureka-server
+    depends_on:
+      - config-server   # ✅ order maintained
     ports:
       - "8761:8761"
-    depends_on:
-      config-server:
-        condition: service_healthy
     restart: always
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
+  # AUTH DB
   auth-db:
     image: mysql:8
     container_name: auth-db
@@ -38,12 +30,8 @@ services:
     ports:
       - "3307:3306"
     restart: always
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
+  # CONSULTANT DB
   consultant-db:
     image: mysql:8
     container_name: consultant-db
@@ -53,56 +41,40 @@ services:
     ports:
       - "3308:3306"
     restart: always
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
+  # AUTH SERVICE
   auth-service:
     image: sid118/auth-service:latest
     container_name: auth-service
     depends_on:
-      config-server:
-        condition: service_healthy
-      eureka-server:
-        condition: service_healthy
-      auth-db:
-        condition: service_healthy
+      - config-server
+      - eureka-server
+      - auth-db
     ports:
       - "8081:8081"
     restart: always
 
+  # CONSULTANT SERVICE
   consultant-service:
     image: sid118/consultant-service:latest
     container_name: consultant-service
     depends_on:
-      config-server:
-        condition: service_healthy
-      eureka-server:
-        condition: service_healthy
-      consultant-db:
-        condition: service_healthy
+      - config-server
+      - eureka-server
+      - consultant-db
     ports:
       - "8082:8082"
     restart: always
 
+  # API GATEWAY (LAST)
   api-gateway:
     image: sid118/api-gateway:latest
     container_name: api-gateway
     depends_on:
-      config-server:
-        condition: service_healthy
-      eureka-server:
-        condition: service_healthy
-      auth-service:
-        condition: service_started
-      consultant-service:
-        condition: service_started
+      - config-server
+      - eureka-server
+      - auth-service
+      - consultant-service
     ports:
       - "8091:8091"
     restart: always
-
-networks:
-  default:
-    name: mediquick_network
