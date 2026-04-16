@@ -8,10 +8,16 @@ pipeline {
 
     stages {
 
-        stage('Checkout Code') {
+        stage('Checkout Code From Git') {
             steps {
-                git branch: 'A00336127-Siddarth',
+                git branch: 'Pipeline-siddarth',
                     url: 'https://github.com/devyanitus/MediQuick-Project.git'
+            }
+        }
+
+        stage('Code Compilation') {
+            steps {
+                bat 'mvn clean install -DskipTests'
             }
         }
 
