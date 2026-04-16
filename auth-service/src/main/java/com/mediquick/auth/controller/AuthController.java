@@ -27,9 +27,9 @@ public class AuthController {
         this.jwtService = jwtService;
     }
 
-    // ✅ REGISTER
+    // REGISTER
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<Map<String, String>> register(@RequestBody RegisterRequest request) {
 
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             return ResponseEntity
@@ -46,11 +46,9 @@ public class AuthController {
 
         return ResponseEntity.ok(Map.of("message", "User registered successfully"));
     }
-
-    // ✅ LOGIN
+    //  LOGIN
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-
+    public ResponseEntity<Map<String, String>> login(@RequestBody LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElse(null);
 

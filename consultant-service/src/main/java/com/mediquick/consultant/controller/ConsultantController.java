@@ -56,13 +56,13 @@ public class ConsultantController {
         return availabilityService.bookSlot(slotId);
     }
 
-    // ✅ Create booking - WAS MISSING!
+    // Create booking
     @PostMapping("/bookings")
     public Booking createBooking(@RequestBody Booking booking) {
         return bookingService.createBooking(booking);
     }
 
-    // ✅ Get bookings by email - fixed @RequestParam
+    // Get bookings by email - fixed @RequestParam
     @GetMapping("/bookings")
     public List<Booking> getBookings(@RequestParam("email") String email) {
         return bookingService.getBookingsByEmail(email);
