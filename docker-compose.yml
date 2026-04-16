@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
 
@@ -7,6 +7,12 @@ services:
     container_name: config-server
     ports:
       - "8888:8888"
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8888/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   eureka-server:
     image: sid118/eureka-server:latest
@@ -14,7 +20,14 @@ services:
     ports:
       - "8761:8761"
     depends_on:
-      - config-server
+      config-server:
+        condition: service_healthy
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   auth-db:
     image: mysql:8
@@ -24,6 +37,12 @@ services:
       MYSQL_DATABASE: mediquick_db
     ports:
       - "3307:3306"
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   consultant-db:
     image: mysql:8
@@ -33,37 +52,57 @@ services:
       MYSQL_DATABASE: mediquick_consultant_db
     ports:
       - "3308:3306"
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   auth-service:
     image: sid118/auth-service:latest
     container_name: auth-service
     depends_on:
-      - eureka-server
-      - config-server
-      - auth-db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://auth-db:3306/mediquick_db
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      auth-db:
+        condition: service_healthy
+    ports:
+      - "8081:8081"
+    restart: always
 
   consultant-service:
     image: sid118/consultant-service:latest
     container_name: consultant-service
     depends_on:
-      - eureka-server
-      - config-server
-      - consultant-db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://consultant-db:3306/mediquick_consultant_db
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: root
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      consultant-db:
+        condition: service_healthy
+    ports:
+      - "8082:8082"
+    restart: always
 
   api-gateway:
     image: sid118/api-gateway:latest
     container_name: api-gateway
+    depends_on:
+      config-server:
+        condition: service_healthy
+      eureka-server:
+        condition: service_healthy
+      auth-service:
+        condition: service_started
+      consultant-service:
+        condition: service_started
     ports:
       - "8091:8091"
-    depends_on:
-      - eureka-server
-      - auth-service
-      - consultant-service
+    restart: always
+
+networks:
+  default:
+    name: mediquick_network

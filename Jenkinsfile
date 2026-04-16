@@ -103,7 +103,7 @@ pipeline {
             steps {
                 bat '''
             echo Stopping existing containers 
-            docker-compose down
+            docker-compose down -v
     
             echo Pulling latest images from Docker Hub 
             docker-compose pull
