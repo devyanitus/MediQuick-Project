@@ -110,15 +110,15 @@ const DoctorPage = () => {
                         }}>
                             <div style={{ marginBottom: "10px" }}>
                                 <div style={{ color: "#64748b", fontSize: "13px" }}>Doctor</div>
-                                <div style={{ fontWeight: "600" }}>{successBooking.doctorName}</div>
+                                <div style={{ fontWeight: "600", color: "#061c4a" }}>{successBooking.doctorName}</div>
                             </div>
                             <div style={{ marginBottom: "10px" }}>
                                 <div style={{ color: "#64748b", fontSize: "13px" }}>Specialization</div>
-                                <div style={{ fontWeight: "600" }}>{successBooking.specialization}</div>
+                                <div style={{ fontWeight: "600",color: "#111827" }}>{successBooking.specialization}</div>
                             </div>
                             <div style={{ marginBottom: "10px" }}>
                                 <div style={{ color: "#64748b", fontSize: "13px" }}>Date & Time</div>
-                                <div style={{ fontWeight: "600" }}>{successBooking.bookingDate} at {successBooking.timeSlot}</div>
+                                <div style={{ fontWeight: "600",color: "#111827" }}>{successBooking.bookingDate} at {successBooking.timeSlot}</div>
                             </div>
                             <div>
                                 <div style={{ color: "#64748b", fontSize: "13px" }}>Booking Reference</div>
@@ -210,13 +210,14 @@ const DoctorPage = () => {
                             <div key={slot.id} style={{
                                 padding: "10px 20px", borderRadius: "8px",
                                 backgroundColor: slot.booked ? "#fecaca" : "#bbf7d0",
-                                border: "1px solid #e2e8f0"
+                                border: "1px solid #e2e8f0",
+                                color: "#0f172a"
                             }}>
                                 <div style={{ fontWeight: "bold" }}>{slot.timeSlot}</div>
                                 {!slot.booked ? (
                                     <button onClick={() => handleBook(slot)} style={{
                                         marginTop: "8px", padding: "6px 14px",
-                                        backgroundColor: "#22c55e", color: "white",
+                                        backgroundColor: "#16a34a", color: "white",
                                         border: "none", borderRadius: "6px", cursor: "pointer"
                                     }}>
                                         Book

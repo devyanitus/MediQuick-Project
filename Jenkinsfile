@@ -28,41 +28,41 @@ pipeline {
             }
         }
 //
-//        stage('Test Auth Service') {
-//            steps {
-//                dir('auth-service') {
-//                    bat 'mvn test'
-//                }
-//            }
-//        }
-//
-//        stage('Test Consultant Service') {
-//            steps {
-//                dir('consultant-service') {
-//                    bat 'mvn test'
-//                }
-//            }
-//        }
-//
-//        stage('Code Coverage Report') {
-//            steps {
-//                jacoco()
-//            }
-//        }
-//
-//        stage('SonarQube Analysis') {
-//            steps {
-//                withSonarQubeEnv('SonarQube') {
-//                    bat '''
-//                    mvn clean verify -pl !karate-tests -am sonar:sonar ^
-//                      -Dsonar.projectKey=mediquick ^
-//                      -Dsonar.projectName=MediQuick ^
-//                      -Dsonar.host.url=http://localhost:9000 ^
-//                      -Dsonar.exclusions=**/karate-tests/**
-//                    '''
-//                }
-//            }
-//        }
+        stage('Test Auth Service') {
+            steps {
+                dir('auth-service') {
+                    bat 'mvn test'
+                }
+            }
+        }
+
+        stage('Test Consultant Service') {
+            steps {
+                dir('consultant-service') {
+                    bat 'mvn test'
+                }
+            }
+        }
+
+        stage('Code Coverage Report') {
+            steps {
+                jacoco()
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQube') {
+                    bat '''
+                    mvn clean verify -pl auth-service,consultant-service -am sonar:sonar ^
+                      -Dsonar.projectKey=mediquick ^
+                      -Dsonar.projectName=MediQuick ^
+                      -Dsonar.host.url=http://localhost:9000 ^
+                      -Dsonar.exclusions=**/karate-tests/**
+                    '''
+                }
+            }
+        }
 
         stage('Build Docker Images') {
             steps {
@@ -117,19 +117,20 @@ pipeline {
             }
         }
 
-//        stage('Karate API Tests') {
-//            steps {
-//                dir('karate-tests') {
-//                    bat 'mvn test'
-//                }
-//            }
-//        }
-//
-//        stage('Publish Karate Results') {
-//            steps {
-//                junit '**/karate-tests/target/surefire-reports/*.xml'
-//            }
-//        }
+        stage('Karate API Tests') {
+            steps {
+                echo 'Running Karate API Tests...'
+                dir('karate-tests') {
+                    bat 'mvn clean test -Dkarate.env=local'
+                }
+            }
+        }
+
+        stage('Publish Karate Results') {
+            steps {
+                junit '**/karate-tests/target/surefire-reports/*.xml'
+            }
+        }
 
     }
 }

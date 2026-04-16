@@ -51,24 +51,24 @@ const AppointmentPage = () => {
                     </h2>
 
                     {confirmed.length === 0 ? (
-                        <p style={{ color: "#64748b" }}>No confirmed appointments.</p>
+                        <p style={{ color: "#310557" }}>No confirmed appointments.</p>
                     ) : confirmed.map(b => (
                         <div key={b.id} style={{
                             backgroundColor: "white", borderRadius: "12px",
                             padding: "20px", marginBottom: "16px",
                             boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-                            borderLeft: "4px solid #22c55e"
+                            borderLeft: "4px solid #35045e"
                         }}>
                             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                                 <div>
-                                    <h3 style={{ margin: "0 0 8px 0" }}>{b.doctorName}</h3>
-                                    <p style={{ margin: "0 0 4px 0", color: "#64748b" }}>
+                                    <h3 style={{ margin: "0 0 8px 0", color: "#610ea3",fontWeight: "700"  }}>{b.doctorName}</h3>
+                                    <p style={{ margin: "0 0 4px 0", color: "#35045e" }}>
                                         🏥 {b.specialization} — {b.category}
                                     </p>
-                                    <p style={{ margin: "0 0 4px 0", color: "#64748b" }}>
+                                    <p style={{ margin: "0 0 4px 0", color: "#1e293b",fontWeight: "500" }}>
                                         📅 {b.bookingDate} at {b.timeSlot}
                                     </p>
-                                    <p style={{ margin: "0", color: "#94a3b8", fontSize: "13px" }}>
+                                    <p style={{ margin: "0", color: "#6c5691", fontSize: "13px" }}>
                                         Ref: <strong>{b.bookingReference}</strong>
                                     </p>
                                 </div>

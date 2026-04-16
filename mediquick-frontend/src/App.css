@@ -59,7 +59,7 @@ body::after {
   font-family: 'Playfair Display', serif;
   font-size: 26px;
   font-weight: 700;
-  color: #ffffff;
+  color: #f8fafc;
   letter-spacing: 0.5px;
 }
 
@@ -376,3 +376,78 @@ button[style] {
     grid-template-columns: 1fr;
   }
 }
+/* ===== FIX TEXT VISIBILITY ON CALENDAR ===== */
+
+/* Calendar Header (April 2026 + arrows) */
+.calendar-header,
+.calendar-header h2,
+.calendar-header span {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Calendar Day Numbers */
+.calendar-day {
+  color: #0f172a;
+  font-weight: 600;
+}
+
+/* Selected day */
+.calendar-day.selected {
+  background: #ffffff !important;
+  color: #0f172a !important;
+}
+
+/* Ensure all day buttons visible */
+.calendar-day,
+.calendar-grid button {
+  color: #0f172a !important;
+}
+
+/* Legend text (Available / Booked / No Slots) */
+.legend,
+.legend span {
+  color: #e2e8f0 !important;
+  font-weight: 500;
+}
+
+/* Slots section heading */
+.slots-heading {
+  color: #ffffff !important;
+  font-weight: 600;
+}
+
+/* Slot cards */
+.slot-card {
+  color: #ffffff;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+/* Available slot */
+.slot-card.available {
+  background: #86efac !important;
+  color: #064e3b !important;
+}
+
+/* Booked slot */
+.slot-card.booked {
+  background: #fca5a5 !important;
+  color: #7f1d1d !important;
+}
+
+/* Improve general text contrast */
+body {
+  color: #e5e7eb;
+}
+
+/* ===== IMPROVE BACKGROUND VISIBILITY ===== */
+body::after {
+  background: linear-gradient(
+          135deg,
+          rgba(10, 30, 60, 0.65) 0%,
+          rgba(15, 40, 80, 0.6) 40%,
+          rgba(5, 25, 50, 0.7) 100%
+  );
+}
+
