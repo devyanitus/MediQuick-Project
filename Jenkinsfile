@@ -57,40 +57,18 @@ pipeline {
             }
         }
 
-//        stage('Quality Gate') {
-//            steps {
-//                timeout(time: 5, unit: 'MINUTES') {
-//                    waitForQualityGate abortPipeline: true
-//                }
-//            }
-//        }
-//
-//        stage('Test Auth + Consultant Services') {
-//            steps {
-//                bat '''
-//                mvn -pl auth-service,consultant-service -am clean test
-//                '''
-//            }
-//        }
-//
-//        stage('Run Karate Tests') {
-//            steps {
-//                dir('karate-tests') {
-//                    bat 'mvn clean test -Dkarate.env=local'
-//                }
-//            }
-//        }
-//    }
-//
-//    post {
-//        always {
-//            junit '**/target/surefire-reports/*.xml'
-//        }
-//        success {
-//            echo '✅ Sonar + Unit Tests + Karate Passed'
-//        }
-//        failure {
-//            echo '❌ Pipeline Failed'
-//        }
+        stage('Karate API Tests') {
+            steps {
+                dir('karate-tests') {
+                    bat 'mvn test'
+                }
+            }
+        }
+
+        stage('Publish Karate Results') {
+            steps {
+                junit '**/karate-tests/target/surefire-reports/*.xml'
+            }
+        }
     }
 }
