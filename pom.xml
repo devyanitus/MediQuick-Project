@@ -48,6 +48,7 @@
         <module>auth-service</module>
         <module>consultant-service</module>
         <module>Api-Gateway</module>
+<!--        <module>karate-tests</module>-->
     </modules>
 
 </project>

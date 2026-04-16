@@ -9,7 +9,7 @@ const LoginPage = () => {
 
     const navigate = useNavigate();
 
-    // ✅ If already logged in → go to home
+    // If already logged in → go to home
     useEffect(() => {
         const token = localStorage.getItem("jwt");
         if (token) {
@@ -52,8 +52,8 @@ const LoginPage = () => {
 
     return (
         <div className="container">
-            <h2>Welcome Back</h2>
-            <h3>Login with your creddentials</h3>
+            <h2>Welcome Back To MediQuick</h2>
+            <h3>Login with your credentials</h3>
 
             <form onSubmit={handleLogin}>
                 <input
