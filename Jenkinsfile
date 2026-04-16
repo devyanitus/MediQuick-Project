@@ -35,6 +35,22 @@ pipeline {
             }
         }
 
+        stage('Test Auth Service') {
+            steps {
+                dir('auth-service') {
+                    bat 'mvn test'
+                }
+            }
+        }
+
+        stage('Test Consultant Service') {
+            steps {
+                dir('consultant-service') {
+                    bat 'mvn test'
+                }
+            }
+        }
+
 //        stage('Quality Gate') {
 //            steps {
 //                timeout(time: 5, unit: 'MINUTES') {
