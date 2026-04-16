@@ -8,7 +8,7 @@ pipeline {
 
     environment {
         DOCKER_USERNAME = 'sid118'
-        DOCKER_PASSWORD = credentials('dockerhub-credentials')
+        DOCKER_PASSWORD = credentials('dockerhub-token')
         IMAGE_TAG = "latest"
     }
 
@@ -63,6 +63,7 @@ pipeline {
                 }
             }
         }
+
         stage('Build Docker Images') {
             steps {
                 bat '''
@@ -111,5 +112,6 @@ pipeline {
 //                junit '**/karate-tests/target/surefire-reports/*.xml'
 //            }
 //        }
+
     }
 }
