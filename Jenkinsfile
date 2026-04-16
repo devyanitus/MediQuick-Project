@@ -17,7 +17,7 @@ pipeline {
 
         stage('Checkout Code From Git') {
             steps {
-                git branch: 'Pipeline-siddarth',
+                git branch: 'Docker-siddarth',
                     url: 'https://github.com/devyanitus/MediQuick-Project.git'
             }
         }
