@@ -47,7 +47,7 @@ pipeline {
             steps {
                 withSonarQubeEnv('SonarQube') {
                     bat '''
-                    mvn clean verify -pl '!karate-tests' sonar:sonar ^
+                    mvn clean verify -pl !karate-tests -am sonar:sonar ^
                       -Dsonar.projectKey=mediquick ^
                       -Dsonar.projectName=MediQuick ^
                       -Dsonar.host.url=http://localhost:9000 ^
