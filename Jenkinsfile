@@ -117,20 +117,12 @@ pipeline {
             }
         }
 
-        stage('Karate API Tests') {
+        stage('Karate API Tests (Docker)') {
             steps {
-                echo 'Running Karate API Tests...'
-                dir('karate-tests') {
-                    bat 'mvn clean test -Dkarate.env=local'
-                }
+                bat 'docker-compose run --rm karate-tests'
             }
         }
 
-        stage('Publish Karate Results') {
-            steps {
-                junit '**/karate-tests/target/surefire-reports/*.xml'
-            }
-        }
 
     }
 }
