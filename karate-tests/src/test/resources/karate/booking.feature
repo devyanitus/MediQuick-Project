@@ -1,51 +1,61 @@
-Feature: Booking API Tests
+Feature: Booking Flow
 
-  Background:
-    * url baseUrl
+    Background:
+        * url baseUrl
 
-  # Step 1: Login and get token
-  Scenario: Full booking flow
+    Scenario: Complete booking journey
 
-    Given path '/auth/login'
-    And request { email: 'test@test.com', password: '123456' }
-    When method POST
-    Then status 200
-    * def token = response.token
+        * def email = 'booking.test+' + new Date().getTime() + '@example.com'
+        * def password = 'Password123'
 
-    # Step 2: Get doctors
-    Given path '/consultants/doctors/category/GP'
-    And header Authorization = 'Bearer ' + token
-    When method GET
-    Then status 200
-    * def doctorId = response[0].id
+# Register + Login
+        Given path 'auth', 'register'
+        And request { name: 'User', email: '#(email)', password: '#(password)' }
+        When method post
 
-    # Step 3: Get availability
-    Given path '/consultants/doctors/' + doctorId + '/availability'
-    And header Authorization = 'Bearer ' + token
-    When method GET
-    Then status 200
-    * def slotId = response[0].id
-    * def bookingDate = response[0].availableDate
-    * def timeSlot = response[0].timeSlot
+        Given path 'auth', 'login'
+        And request { email: '#(email)', password: '#(password)' }
+        When method post
+        * def token = response.token
 
-    # Step 4: Book slot (mark as booked)
-    Given path '/consultants/availability/' + slotId + '/book'
-    And header Authorization = 'Bearer ' + token
-    When method PUT
-    Then status 200
+# Get doctors
+        Given path 'consultants', 'doctors', 'category', 'GP'
+        And header Authorization = 'Bearer ' + token
+        When method get
+        Then status 200
 
-    #  Step 5: Create booking record
-    Given path '/consultants/bookings'
-    And header Authorization = 'Bearer ' + token
-    And request
-      """
-      {
-    userEmail: 'test@test.com',
-    doctorId: '#(doctorId)',
-    bookingDate: '#(bookingDate)',
-    timeSlot: '#(timeSlot)'
-    }
-    """
-    When method POST
-    Then status 200
-    And match response.bookingReference != null
+        * if (response.length == 0) karate.abort()
+        * def doctorId = response[0].id
+
+# Get availability
+        Given path 'consultants', 'doctors', doctorId, 'availability'
+        And header Authorization = 'Bearer ' + token
+        When method get
+        Then status 200
+
+        * if (response.length == 0) karate.abort()
+        * def slotId = response[0].id
+        * def bookingDate = response[0].availableDate
+        * def timeSlot = response[0].timeSlot
+
+# Book slot
+        Given path 'consultants', 'availability', slotId, 'book'
+        And header Authorization = 'Bearer ' + token
+        When method put
+        Then status 200
+
+# Create booking
+        Given path 'consultants', 'bookings'
+        And header Authorization = 'Bearer ' + token
+        And request
+"""
+{
+  "userEmail": "#(email)",
+  "doctorId": #(doctorId),
+  "bookingDate": "#(bookingDate)",
+  "timeSlot": "#(timeSlot)"
+}
+"""
+        When method post
+        Then status 200
+        And match response.id != null

@@ -1,17 +1,38 @@
-Feature: Auth API Tests
+Feature: Auth API
 
-Background:
-* url baseUrl
+  Background:
+    * url baseUrl
 
-Scenario: Register user
-Given path '/auth/register'
-And request { name: 'Test User', email: 'test@test.com', password: '123456' }
-When method POST
-Then status 200
+  Scenario: Register and Login
 
-Scenario: Login user
-Given path '/auth/login'
-And request { email: 'test@test.com', password: '123456' }
-When method POST
-Then status 200
-And match response.token != null
+    * def email = 'auth.test+' + new Date().getTime() + '@example.com'
+    * def password = 'Password123'
+
+# Register
+    Given path 'auth', 'register'
+    And request
+"""
+{
+  "name": "Test User",
+  "email": "#(email)",
+  "password": "#(password)"
+}
+"""
+    When method post
+    Then status 200
+    And match response.message == 'User registered successfully'
+
+# Login
+    Given path 'auth', 'login'
+    And request
+"""
+{
+  "email": "#(email)",
+  "password": "#(password)"
+}
+"""
+    When method post
+    Then status 200
+    And match response.token != null
+
+    * def token = response.token
