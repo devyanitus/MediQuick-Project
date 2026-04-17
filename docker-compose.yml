@@ -33,6 +33,7 @@ services:
       - "8761:8761"
     environment:
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+    restart: on-failure
 
   auth-service:
     image: auth-service:latest
@@ -48,6 +49,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: admin
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+    restart: on-failure
 
   consultant-service:
     image: consultant-service:latest
@@ -63,6 +65,7 @@ services:
       SPRING_DATASOURCE_PASSWORD: admin
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+    restart: on-failure
 
   api-gateway:
     image: api-gateway:latest
@@ -76,6 +79,7 @@ services:
     environment:
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
       SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+    restart: on-failure
 
 volumes:
   mysql_auth_data:
