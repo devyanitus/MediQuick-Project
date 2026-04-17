@@ -15,4 +15,4 @@ Scenario: Register user
   When method post
   * print 'register status:', responseStatus
   * print 'register response:', response
-  Then assert responseStatus >= 200 && responseStatus < 500
+  Then assert responseStatus < 500

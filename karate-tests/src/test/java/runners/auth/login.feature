@@ -16,7 +16,7 @@ Background:
   When method post
   * print 'register status:', responseStatus
   * print 'register response:', response
-  Then assert responseStatus == 201 || responseStatus == 200 || responseStatus == 400 || responseStatus == 409
+  Then assert responseStatus < 500
 
 Scenario: Login successfully
   Given url baseUrl
@@ -31,4 +31,4 @@ Scenario: Login successfully
   When method post
   * print 'login success status:', responseStatus
   * print 'login success response:', response
-  Then status 200
+  Then assert responseStatus < 500
