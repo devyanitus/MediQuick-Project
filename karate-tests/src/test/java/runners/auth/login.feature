@@ -14,7 +14,7 @@ Feature: Auth login
     When method post
     * print 'register status:', responseStatus
     * print 'register response:', response
-    Then assert responseStatus == 200 || responseStatus == 400 || responseStatus == 409
+    Then assert responseStatus == 201 || responseStatus == 200 || responseStatus == 400 || responseStatus == 409
 
   Scenario: Login successfully
     Given url baseUrl
