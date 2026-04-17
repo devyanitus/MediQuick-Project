@@ -1,6 +1,5 @@
-version: '3.8'
-
 services:
+
   mysql-auth:
     image: mysql:8.0
     container_name: mysql-auth
@@ -12,25 +11,6 @@ services:
     volumes:
       - mysql_auth_data:/var/lib/mysql
 
-  eureka-server:
-    image: eureka-server:latest
-    container_name: eureka-server
-    ports:
-      - "8761:8761"
-
-  auth-service:
-    image: auth-service:latest
-    container_name: auth-service
-    depends_on:
-      - mysql-auth
-      - eureka-server
-    ports:
-      - "8085:8081"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-auth:3306/mediquick_db
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: admin
-      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
   mysql-consultant:
     image: mysql:8.0
     container_name: mysql-consultant
@@ -42,12 +22,45 @@ services:
     volumes:
       - mysql_consultant_data:/var/lib/mysql
 
+  config-server:
+    image: config-server:latest
+    container_name: config-server
+    ports:
+      - "8888:8888"
+
+  eureka-server:
+    image: eureka-server:latest
+    container_name: eureka-server
+    depends_on:
+      - config-server
+    ports:
+      - "8761:8761"
+    environment:
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+
+  auth-service:
+    image: auth-service:latest
+    container_name: auth-service
+    depends_on:
+      - mysql-auth
+      - eureka-server
+      - config-server
+    ports:
+      - "8085:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-auth:3306/mediquick_db
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: admin
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+
   consultant-service:
     image: consultant-service:latest
     container_name: consultant-service
     depends_on:
       - mysql-consultant
       - eureka-server
+      - config-server
     ports:
       - "8086:8082"
     environment:
@@ -55,6 +68,22 @@ services:
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: admin
       EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+
+  api-gateway:
+    image: api-gateway:latest
+    container_name: api-gateway
+    depends_on:
+      - eureka-server
+      - auth-service
+      - consultant-service
+      - config-server
+    ports:
+      - "8091:8091"
+    environment:
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+      SPRING_CONFIG_IMPORT: optional:configserver:http://config-server:8888
+
 volumes:
   mysql_auth_data:
   mysql_consultant_data:
