@@ -101,32 +101,23 @@ pipeline {
         stage('Deploy with Docker Compose') {
 
             steps {
-//                options {
-//                    timeout(time:4, unit: 'MINUTES')
-//                }
-//                bat '''
-            echo Stopping existing containers 
-            docker-compose down -v
-    
-            echo Pulling latest images from Docker Hub 
-            docker-compose pull
-    
-            echo Starting containers
-            docker-compose up -d
-    
-            echo Running containers
-            docker ps
+
+               bat '''
+                echo Stopping existing containers 
+                docker-compose down -v
+        
+                echo Pulling latest images from Docker Hub 
+                docker-compose pull
+        
+                echo Starting containers
+                docker-compose up -d
+        
+                echo Running containers
+                docker ps
         '''
             }
         }
-//        stage('Wait Before Karate') {
-//            steps {
-//                bat '''
-//        echo Waiting 4 minutes before running Karate tests...
-//        timeout /t 240
-//        '''
-//            }
-//        }
+
 
         stage('Karate API Tests (Docker)') {
             steps {
