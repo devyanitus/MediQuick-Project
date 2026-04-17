@@ -1,13 +1,14 @@
 Feature: Auth login
 
   Background:
+    * def uniqueEmail = 'karate.login+' + java.util.UUID.randomUUID() + '@example.com'
     Given url baseUrl
     And path 'auth', 'register'
     And request
     """
     {
       "name": "Karate User",
-      "email": "karate.login@example.com",
+      "email": "#(uniqueEmail)",
       "password": "Password123"
     }
     """
@@ -22,13 +23,15 @@ Feature: Auth login
     And request
     """
     {
-      "email": "karate.login@example.com",
+      "email": "#(uniqueEmail)",
       "password": "Password123"
     }
     """
     When method post
+    * print 'login success status:', responseStatus
+    * print 'login success response:', response
     Then status 200
-    And match response.email == 'karate.login@example.com'
+    And match response.email == uniqueEmail
     And match response.name == 'Karate User'
     And match response.token == '#string'
 
@@ -38,11 +41,13 @@ Feature: Auth login
     And request
     """
     {
-      "email": "karate.login@example.com",
+      "email": "#(uniqueEmail)",
       "password": "WrongPassword"
     }
     """
     When method post
+    * print 'wrong password status:', responseStatus
+    * print 'wrong password response:', response
     Then status 400
     And match response.error == 'Invalid password'
 
@@ -57,5 +62,7 @@ Feature: Auth login
     }
     """
     When method post
+    * print 'unknown user status:', responseStatus
+    * print 'unknown user response:', response
     Then status 400
     And match response.error == 'User not found'
