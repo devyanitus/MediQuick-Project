@@ -1,7 +1,7 @@
 Feature: Consultant APIs
 
 Background:
-  * def uniqueEmail = 'consultant.test+' + uuid() + '@example.com'
+  * def uniqueEmail = 'consultant.test+' + new Date().getTime() + '@example.com'
 
   Given url baseUrl
   And path 'auth', 'register'
