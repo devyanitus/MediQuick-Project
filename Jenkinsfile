@@ -116,6 +116,14 @@ pipeline {
         '''
             }
         }
+        stage('Wait Before Karate') {
+            steps {
+                bat '''
+        echo Waiting 4 minutes before running Karate tests...
+        timeout /t 240
+        '''
+            }
+        }
 
         stage('Karate API Tests (Docker)') {
             steps {
