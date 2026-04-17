@@ -101,10 +101,10 @@ pipeline {
         stage('Deploy with Docker Compose') {
 
             steps {
-                options {
-                    timeout(time:4, unit: 'MINUTES')
-                }
-                bat '''
+//                options {
+//                    timeout(time:4, unit: 'MINUTES')
+//                }
+//                bat '''
             echo Stopping existing containers 
             docker-compose down -v
     
